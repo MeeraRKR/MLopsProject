@@ -1,99 +1,118 @@
 ---
 title: Predictive Maintenance
-emoji: 🦀
-colorFrom: pink
-colorTo: yellow
+
 sdk: streamlit
-sdk_version: 1.31.1
+sdk_version: 0.0.1
 app_file: app.py
 pinned: false
 license: mit
 ---
 
-# Predictive Maintenance
+# Equipment Predictive Maintenance
 
-## 1. Overview
-
----
-
-This design doc outlines the development of a web application for predictive maintenance using a synthetic dataset. The application will utilize machine learning models that:
-
-- Evaluates whether the equipment will fail or not based on process parameters, including air and process temperatures, rotational speed, torque, and tool wear.
-
-- Identifies the type of equipment failure in the event of a failure, based on the same process parameters.
-
-## 2. Motivation
+## Overview
 
 ---
 
 Predictive maintenance can help companies minimize downtime, reduce repair costs, and improve operational efficiency. Developing a web application for predictive maintenance can provide users with real-time insights into equipment performance, enabling proactive maintenance, and reducing unplanned downtime.
 
-## 3. Success Metrics
+The important business questions that are solved by employing data driven approach using machine learning models are:
+
+- Predict whether an equipment will fail or not based.
+
+- Identifies the type of equipment failure.
+
+This web application is a demonstration of predictive maintenance using a synthetic dataset.  The dataset comprises of process parameters, ambient air and process temperatures, rotational speed, torque, and tool wear. 
 
 ---
 
-The success of the project will be measured based on the following metrics:
+## Performance metrics
+
+---
+
+To evaluate the performance of the ML models used in the project following metrics are used:
 
 - Precsion, recall, and F1 score of the machine learning models.
 - Responsiveness and ease of use of the web application.
-- Reduction in unplanned downtime and repair costs
-
-## 4. Requirements & Constraints
 
 ---
 
-### 4.1 Functional Requirements
-
-The web application should provide the following functionality:
+The web application provides the following functionality:
 
 - Users can provide the process parameters to the model and receive a prediction of whether the equipment will fail or not, and the type of failure.
 - Users can view and infer the performance metrics of different machine learning models.
 - Users can visualize the data and gain insights into the behavior of the equipment.
-
-### 4.2 Non-functional Requirements
-
-The web application should meet the following non-functional requirements:
-
-- The model should have high precision, recall, and F1 score.
-- The web application should be responsive and easy to use.
-- The web application should be secure and protect user data.
-
-### 4.3 Constraints
-
 - The application should be built using Streamlit and deployed using Docker and Huggingface spaces.
 - The cost of deployment should be minimal.
 
-### 4.4 Out-of-scope
+---
 
-- Integrating with external applications or data sources.
-- Providing detailed equipment diagnostic information.
-
-## 5. Methodology
+## Problem Statement
 
 ---
 
-### 5.1. Problem Statement
-
 The problem is to develop a machine learning model that predicts equipment failures based on process parameters.
 
-### 5.2. Data
+---
+## Dataset
+---
 
-The dataset consists of more than 50,000 data points stored as rows with 14 features in columns. The features include process parameters such as air and process temperatures, rotational speed, torque, and tool wear. The target variable is a binary label indicating whether the equipment failed or not.
+The dataset consists of more than 10,000 data points stored as rows with 14 features in columns. The features include process parameters such as air and process temperatures, rotational speed, torque, and tool wear. The target variable is a binary label indicating whether the equipment failed or not.
 
-### 5.3. Techniques
+The dataset consists of 10 000 data points stored as rows with 14 features in columns
 
-We will utilize both a binary classification model, and a multi-class classification model to predict equipment failures, and type of equipment fauilure respectively. The following machine learning techniques will be used:
+UID: unique identifier ranging from 1 to 10000
 
+product ID: consisting of a letter L, M, or H for low (50% of all products), medium (30%) and high (20%) as
+
+product quality variants and a variant-specific serial number
+
+air temperature [K]: generated using a random walk process later normalized to a standard deviation of 2 K around 300 K
+
+process temperature [K]: generated using a random walk process normalized to a standard deviation of 1 K, added to the air temperature plus 10 K.
+
+rotational speed [rpm]: calculated from a power of 2860 W, overlaid with a normally distributed noise
+
+torque [Nm]: torque values are normally distributed around 40 Nm
+
+tool wear [min]: The quality variants H/M/L add 5/3/2 minutes of tool wear to the used tool in the process. and a 'machine failure' label that indicates, whether the machine has failed in this particular datapoint for any of the following failure modes are true.
+
+
+---
+## ML models
+---
+We will utilize both a binary classification model, and a multi-class classification model to predict equipment failures, and type of equipment failure respectively. 
+
+### Machine failure consists of five unique modes
+tool wear failure (TWF): the tool will be replaced of fail at a randomly selected tool wear time between 200 to 240 mins. At this point in time, the tool is replaced 69 times, and fails 51 times (randomly assigned).
+
+heat dissipation failure (HDF): heat dissipation causes a process failure, if the difference between air- and process temperature is below 8.6 K and the tool's rotational speed is below 1380 rpm. This is the case for 115 data points.
+
+power failure (PWF): the product of torque and rotational speed (in rad/s) equals the power required for the process. If this power is below 3500 W or above 9000 W, the process fails, which is the case 95 times in our dataset.
+
+overstrain failure (OSF): if the product of tool wear and torque exceeds 11,000 minNm for the L product variant (12,000 M, 13,000 H), the process fails due to overstrain. This is true for 98 datapoints.
+
+random failures (RNF): each process has a chance of 0,1 % to fail regardless of its process parameters. This is the case for only 5 datapoints, less than could be expected for 10,000 datapoints in our dataset.
+
+If at least one of the above failure modes is true, the process fails and the 'machine failure' label is set to 1. It is therefore not transparent to the machine learning method, which of the failure modes has caused the process to fail
+
+The following machine learning models will be used:
+
+- Random Forest
+- Decision Tree
+- Logistic Regression
+- Support Vector Machine (SVM)
+---
+## Generic steps
+---
 - Data preprocessing and cleaning
 - Feature engineering and selection
 - Model selection and training
 - Hyperparameter tuning
 - Model evaluation and testing
-
-## 6. Architecture
-
 ---
-
+## Architecture
+---
 The web application architecture will consist of the following components:
 
 - A frontend web application built using Streamlit
@@ -104,30 +123,12 @@ The web application architecture will consist of the following components:
 
 The frontend will interact with the backend server through API calls to request predictions, model training, and data storage. The backend server will manage user authentication, data storage, and model training. The machine learning model will be trained and deployed using Docker containers. The application will be hosted on Huggingface sppaces. The CI/CD pipeline will be used to automate the deployment process.
 
-## 7. Pipeline
+---
+
+## Mlops practices
 
 ---
 
-The MLOps (Machine Learning Operations) pipeline project is designed to create an end-to-end workflow for developing and deploying a web application that performs data preprocessing, model training, model evaluation, and prediction. The pipeline leverages Docker containers for encapsulating code, artifacts, and both the frontend and backend components of the application. The application is deployed on a huggingface space to provide a cloud hosting solution.
+This project is designed to create an end-to-end workflow for developing and deploying a web application that performs data preprocessing, model training, model evaluation, and prediction. The pipeline leverages Docker containers for encapsulating code, artifacts, and both the frontend and backend components of the application. The application is deployed on a huggingface space to provide a cloud hosting solution.
 
-The pipeline follows the following sequence of steps:
-
-`Data`: The pipeline starts with the input data, which is sourced from a specified location. It can be in the form of a CSV file or any other supported format.
-
-`Preprocessing`: The data undergoes preprocessing steps to clean, transform, and prepare it for model training. This stage handles tasks such as missing value imputation, feature scaling, and categorical variable encoding.
-
-`Model Training`: The preprocessed data is used to train machine learning models. The pipeline supports building multiple models, allowing for experimentation and comparison of different algorithms or hyperparameters.
-
-`Model Evaluation`: The trained models are evaluated using appropriate evaluation metrics to assess their performance. This stage helps in selecting the best-performing model for deployment.
-
-`Docker Container`: The pipeline utilizes Docker containers to package the application code, model artifacts, and both the frontend and backend components. This containerization ensures consistent deployment across different environments and simplifies the deployment process.
-
-`Huggingface Space`: The Docker container, along with the required dependencies, is deployed on a Huggingface Space. Huggingface provides a cloud hosting solution that allows for scalability, reliability, and easy management of the web application.
-
-`Web App`: The web application is accessible via a web browser, providing a user-friendly interface for interacting with the prediction functionality. Users can input new data and obtain predictions from the deployed model.
-
-`Prediction`: The deployed model uses the input data from the web application to generate predictions. These predictions are then displayed to the user via the web interface.
-
-`Data`: The predicted data is captured and stored, providing a record of the predictions made by the web application. This data can be used for analysis, monitoring, or further processing as needed.
-
-`CI/CD Pipeline`: The pipeline is automated using GitHub Actions, which allows for continuous integration and deployment of the application. This automation ensures that the application is always up-to-date and provides a consistent experience for users.
+---
