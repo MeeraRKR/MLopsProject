@@ -1,8 +1,10 @@
 ---
-title: Predictive Maintenance
-
+title: Equipment Failure Prediction
+emoji: 👷‍♀️🛠️⚙️ 
+colorFrom: pink
+colorTo: purple
 sdk: streamlit
-sdk_version: 0.0.1
+sdk_version: 1.34.0
 app_file: app.py
 pinned: false
 license: mit
