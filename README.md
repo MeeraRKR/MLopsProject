@@ -1,7 +1,7 @@
 ---
-title: Equipment Failure Prediction
+title: Pred Maintenance App
 emoji: 👷‍♀️🛠️
-colorFrom: pink
+colorFrom: yellow
 colorTo: purple
 sdk: streamlit
 sdk_version: 1.34.0
