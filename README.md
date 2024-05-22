@@ -1,6 +1,6 @@
 ---
 title: Equipment Failure Prediction
-emoji: 👷‍♀️🛠️⚙️ 
+emoji: 👷‍♀️🛠️
 colorFrom: pink
 colorTo: purple
 sdk: streamlit
